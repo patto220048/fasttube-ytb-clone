@@ -1,8 +1,19 @@
 import styled from "styled-components";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'; 
 import SearchIcon from '@mui/icons-material/Search';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import VideoCallIcon from '@mui/icons-material/VideoCall';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import Tippy from '@tippyjs/react';
+import LogoutIcon from '@mui/icons-material/Logout';
 
+import axios from "axios";
+
+import { useDispatch } from "react-redux";
+import { logout } from "../redux/userSlice";
+import Upload from "./Upload";
+import { useState } from "react";
 
 
 const ContainerNav = styled.div`
@@ -70,23 +81,102 @@ const Button = styled.button`
     gap: 5px;
    
 `
+const User = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+
+ 
+
+`
+const AvatarUser = styled.img`
+    width:30px;
+    height: 30px;
+    object-fit: cover;
+    border-radius:50%;
+    background-color:#999;
+    cursor: pointer;
+
+
+
+`
+const HoverIcon = styled.span`
+
+    padding: 5px;
+    cursor: pointer;
+    border-radius:50%;
+    
+
+    &:hover{
+        background-color: #ccc;
+        
+    }
+
+`
+
 
 
 
 
 function Navbar() {
+
+    const dispatch = useDispatch()
+    const {curentUser} = useSelector(state => state.user)
+
+    const navigate = useNavigate()
+
+
+    const handleLogout =async () => {
+        const res = await axios.get('http://localhost:3000/api/auth/signout',{ withCredentials: true})
+        dispatch(logout())
+    }
+    
+    const [open, setOpen] = useState(false)
+
+    const [q, setQ] = useState('')
+
+
     return (  
-        <ContainerNav>
-            <WapperNav>
-                <SearchNav>
-                    <SearchInput placeholder="Search"/>
-                    <SearchIcon style={{cursor: 'pointer'}}/>
-                </SearchNav>
-                <Link to='signin' style={{textDecoration: 'none',color:'inherit' }}>
-                <Button><AccountCircleIcon  />SIGN IN</Button>
-                </Link>
-            </WapperNav>
-        </ContainerNav>
+        <>
+            <ContainerNav>
+                <WapperNav>
+
+                  
+                        <SearchNav>
+                            <SearchInput placeholder="Search" onChange={e=> setQ(e.target.value)}/>
+                            <Tippy content = 'Search'>
+                                <SearchIcon  style={{cursor: 'pointer'}} onClick={()=>navigate(`/search?q=${q}`)}/>
+                            </Tippy>
+                        </SearchNav>
+               
+                    {curentUser ? 
+                    <User>
+                        
+                        <HoverIcon>
+                            <VideoCallIcon onClick={()=> setOpen(true)} />
+                        </HoverIcon>
+
+                        <HoverIcon>
+                            <NotificationsIcon/>
+                        </HoverIcon>
+                        <HoverIcon>
+                            <LogoutIcon onClick={handleLogout}/>
+                        </HoverIcon>
+                    
+                        <Tippy content={curentUser.name}>
+                            <AvatarUser src={curentUser.img}/>
+                        </Tippy>
+                    
+                    </User>
+                    : 
+                    <Link to='signin' style={{textDecoration: 'none',color:'inherit' }}>
+                    <Button><AccountCircleIcon />SIGN IN</Button>
+                    </Link>}
+                </WapperNav>
+            </ContainerNav>
+            {open && <Upload setOpen={setOpen}/>}
+        </>
     );
 }
 

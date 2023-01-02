@@ -16,6 +16,8 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import SettingsBrightnessIcon from '@mui/icons-material/SettingsBrightness';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'; 
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import LogoutIcon from '@mui/icons-material/Logout';
 
 
 const ContainerMenu = styled.div`
@@ -26,10 +28,13 @@ const ContainerMenu = styled.div`
     font-size:14px;
     position:sticky;
     top: 0;
+
 `
 const WapperMenu = styled.div`
     padding: 18px 26px;
     height:100%;
+
+    width:150px;
     
 `
 const Logo = styled.div`
@@ -47,15 +52,17 @@ const Img = styled.img`
 `
 
 const ItemsMenu = styled.div`
+    width: 100%;
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 10px;
     cursor: pointer;
-    padding:7.5px 0;
+    padding:10px 0px;
     &:hover{
         background-color: ${({theme}) => theme.soft};
         border-radius: 10px;
-        padding-left: 10px;
+        padding-left: 6px;
+       
 
     }
 
@@ -96,25 +103,32 @@ const TitleMenu = styled.div`
 
 
 const Menu=({darkMode,setDarkMode})=>{
+    const {curentUser} = useSelector(state => state.user)
 
     return ( 
         <ContainerMenu>
             <WapperMenu>
                 <Link to='/' style={{textDecoration: 'none',color:'inherit' }}>
-                <Logo>
-                    <Img src="https://www.iconpacks.net/icons/2/free-youtube-logo-icon-2431-thumb.png"/>
-                    FastTube
-                </Logo>
+                    <Logo>
+                        <Img src="https://www.iconpacks.net/icons/2/free-youtube-logo-icon-2431-thumb.png"/>
+                        FastTube
+                    </Logo>
                 </Link>
-                <ItemsMenu>
-                    <HomeIcon/>Home
-                </ItemsMenu>
-                <ItemsMenu>
-                    <ExploreIcon/>Explore
-                </ItemsMenu> 
-                <ItemsMenu>
-                    <SubscriptionsIcon/>Subscriptions
-                </ItemsMenu>
+                <Link to='/random'  style={{textDecoration: 'none',color:'inherit' }}>
+                    <ItemsMenu>
+                        <HomeIcon/>Home
+                    </ItemsMenu>
+                </Link >
+                <Link to='/trends'  style={{textDecoration: 'none',color:'inherit' }}>
+                    <ItemsMenu>
+                        <ExploreIcon/>Explore
+                    </ItemsMenu>
+                </Link> 
+                <Link to='/subscriptions'  style={{textDecoration: 'none',color:'inherit' }}>
+                    <ItemsMenu>
+                        <SubscriptionsIcon/>Subscriptions
+                    </ItemsMenu>
+                </Link>
                 <Hr/>
                 <ItemsMenu>
                     <VideoLibraryIcon/>Library
@@ -122,14 +136,17 @@ const Menu=({darkMode,setDarkMode})=>{
                 <ItemsMenu>
                     <HistoryIcon/>History
                 </ItemsMenu>
-                <Hr/> 
-                <Login>
+                <Hr/>
+               { curentUser ? "" :
+               <><Login>
                     Lorem ipsum dolor sit amet, consectetur adip
                     <Link to='signin' style={{textDecoration: 'none',color:'inherit' }}>
                     <Button><AccountCircleIcon/>SIGN IN</Button>
                     </Link>
                 </Login>
-                <Hr/> 
+                <Hr/></>
+                }
+                
                 <TitleMenu>
                     BEST OF FASTTUBE
                 </TitleMenu>

@@ -1,4 +1,14 @@
+import { useState } from "react";
 import styled from "styled-components";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { loginFail, loginStart, loginSuccess } from "../redux/userSlice";
+
+import app,{auth,providerGG} from "../firebase"
+
+import {signInWithPopup} from "firebase/auth"
+import { async } from "@firebase/util";
+import { useNavigate } from "react-router-dom";
 
 const ContainerSignin = styled.div`
     display: flex;
@@ -52,6 +62,9 @@ const BtnSignin = styled.button`
     font-weight:600;
     background-color: ${({theme})=> theme.text};
     color: ${({theme})=> theme.btnsignupcolor};
+    &:hover{
+        opacity: 0.8
+    }
     
 `;
 
@@ -76,17 +89,66 @@ const Link = styled.span`
 
 
 function SigninPage() {
+    const [name, setName] = useState('')
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const dispatch = useDispatch()
+
+    const navigate = useNavigate()
+
+    const handleLogin = async (e) =>{
+        e.preventDefault();
+        dispatch(loginStart())
+
+        try {
+            const res = await axios.post('http://localhost:3000/api/auth/signin',{name,password},{
+                withCredentials: true,
+            }); //for POST
+
+            dispatch(loginSuccess(res.data))
+
+            navigate(`/`)
+
+            
+
+        } catch (err) { 
+            dispatch(loginFail())
+        }
+    };
+    const signInWithGG = async () =>{
+        dispatch(loginStart())
+        signInWithPopup(auth, providerGG)
+            .then ((result) =>{
+                axios.post('http://localhost:3000/api/auth/google',{
+                    name: result.user.displayName,
+                    email: result.user.email,
+                    img: result.user.photoURL
+                },
+               { withCredentials: true}
+                )
+                .then((res)=>{
+                    dispatch(loginSuccess(res.data))
+                })
+
+            })
+            .catch (err => {
+                dispatch(loginFail())
+            })
+    }
     return ( 
         <ContainerSignin>
             <WapperSignin>
                 <TitleSignin>Sign in</TitleSignin>
                 <SubSignin>to continue in FastTube</SubSignin>
-                <InputSignin placeholder="username"/>
-                <InputSignin type="password" placeholder="password"/>
-                <BtnSignin>Sign in</BtnSignin>
+                <InputSignin placeholder="username" onChange={e=>setName(e.target.value)}/>
+                <InputSignin type="password" placeholder="password" onChange={e=>setPassword(e.target.value)}/>
+                <BtnSignin onClick={handleLogin}>Sign in</BtnSignin>
                 <TitleSignin>or</TitleSignin>
-                <InputSignin placeholder="username"/>
-                <InputSignin type="password" placeholder="password"/>
+                <BtnSignin onClick={signInWithGG}>Sign in with Google</BtnSignin>
+                <TitleSignin>or</TitleSignin>
+                <InputSignin placeholder="username" onChange={e=>setName(e.target.value)}/>
+                <InputSignin placeholder="email" onChange={e=>setEmail(e.target.value)}/>
+                <InputSignin type="password" placeholder="password" onChange={e=>setPassword(e.target.value)}/>
                 <BtnSignin>Sign up</BtnSignin>
             </WapperSignin>
             <More>

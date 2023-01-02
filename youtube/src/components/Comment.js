@@ -1,4 +1,7 @@
+import axios from "axios";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
+import { format } from "timeago.js";
 
 const ContainerCmt = styled.div`
     display: flex;
@@ -6,7 +9,7 @@ const ContainerCmt = styled.div`
     margin: 30px 0;
 
 `
-const AvatarContainerCmt = styled.div`
+const AvatarContainerCmt = styled.img`
     width: 40px;
     height: 40px;
     background-color: #333;
@@ -25,6 +28,8 @@ const DetailsCmt = styled.div`
 const NamelCmt = styled.span`
     font-size: 13px;
     font-weight: 600;
+    
+
   
 `
 const DateCmt = styled.span`
@@ -40,15 +45,29 @@ const DescCmt = styled.span`
 
 `
 
-function Comment() {
+function Comment({comment}) {
+    
+
+
+    const [channel, setChannel] = useState({})
+
+    useEffect(()=> {    
+        const fetchChannel = async() =>{    
+            const res = await axios.get(`http://localhost:3000/api/users/find/${comment.userId}`)
+            setChannel(res.data)
+        }
+        fetchChannel()
+    },[comment.userId])
+
+
     return ( 
        <ContainerCmt>
-            <AvatarContainerCmt src="https://ichef.bbci.co.uk/news/976/cpsprodpb/F382/production/_123883326_852a3a31-69d7-4849-81c7-8087bf630251.jpg" />
+            <AvatarContainerCmt src={channel.img} />
             <DetailsCmt>
-                <NamelCmt>Name 
-                    <DateCmt> 1h ago</DateCmt>
+                <NamelCmt>{channel.name}
+                    <DateCmt> {format(channel.updatedAt)}</DateCmt>
                 </NamelCmt>
-                <DescCmt/> orem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been adcada orem Ipsum is simply dummy text of the printi
+                <DescCmt/> {comment.desc} <DescCmt/>  
             </DetailsCmt>
        </ContainerCmt>
      );

@@ -1,5 +1,8 @@
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import {format} from "timeago.js"
 
 
 const ContainerCard = styled.div`
@@ -49,8 +52,11 @@ const Title = styled.h1`
 `
 const ChannelName = styled.h2`
     color: ${({theme}) => theme.textSoft};
-    font-size:14px;
+    font-size:12px;
     margin:10px 0;
+    &:hover {
+        color: ${({theme}) => theme.text}
+    }
 `
 const Info = styled.div`
     font-size:14px;
@@ -58,17 +64,27 @@ const Info = styled.div`
 
 `
 
-const Card = ({type}) => {
+const Card = ({type,video}) => {
+    const [channel, setChannel] = useState({})
+
+    useEffect(()=>{
+        const fetchChannel = async()=> {
+            const res = await axios.get(`http://localhost:3000/api/users/find/${video.userId}`)
+            setChannel(res.data)
+        }
+        fetchChannel()
+
+    },[video.userId])
     return ( 
-        <Link to='/video/test' style={{textDecoration: 'none' }}>
+        <Link to={`/video/${video._id}`} style={{textDecoration: 'none' }}>
             <ContainerCard type = {type}>
-                <ImgCard type = {type} src="https://havecamerawilltravel.com/wp-content/uploads/2020/01/youtube-thumbnails-size-header-1.png"/>
+                <ImgCard type = {type} src={video.videoImg}/>
                 <DetailsCard  type = {type}>
-                    <ChannelImg type = {type} src="https://ichef.bbci.co.uk/news/976/cpsprodpb/F382/production/_123883326_852a3a31-69d7-4849-81c7-8087bf630251.jpg"/>
+                    <ChannelImg type = {type} src={channel.img}/>
                     <Texts>
-                        <Title>TEST Video13  </Title>
-                        <ChannelName>FASTChannel</ChannelName>
-                        <Info>606.606 views - 1 days</Info>
+                        <Title>{video.videoTitle}  </Title>
+                        <ChannelName>{channel.name}</ChannelName>
+                        <Info>{video.views}views • {format(video.createdAt)}</Info>
                     </Texts>
 
                 </DetailsCard>

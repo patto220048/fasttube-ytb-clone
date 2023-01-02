@@ -5,6 +5,19 @@ import ShareIcon from "@mui/icons-material/Share";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import Comments from "../components/Comments";
 import Card from "../components/Card";
+import { useSelector, useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios, { Axios } from "axios";
+import { fetchSuccess, like, dislike, fetchFail } from "../redux/videoSlice";
+import { format } from "timeago.js";
+import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
+import ThumbDownAltOutlinedIcon from '@mui/icons-material/ThumbDownAltOutlined';
+import { subscription } from "../redux/userSlice";
+import { channelFail, channelSuccess } from "../redux/channelVideoSlice";
+import Recomment from "../components/Recomment";
+
+
 const ContainerVideo = styled.div`
   display: flex;
   gap: 24px;
@@ -118,72 +131,140 @@ const ChannelDsecp = styled.p`
   padding-left:12px;
 
 `
+const VideoFrame = styled.video`
+  max-height: 720px;
+  width:100%;
+  object-fit: cover;
+  
+
+`
 
 const VideoPage = () => {
+  
+  const {curentUser} = useSelector((state) => state.user)
+  const {curentVideo} = useSelector((state) => state.video)
+  const {curentChannel} = useSelector((state) => state.channelVideo)
+
+
+
+  const dispatch = useDispatch()
+  const path = useLocation().pathname.split('/')[2]
+
+ 
+  useEffect(()=>{
+
+    const fetchVideo = async () =>{
+      try {
+        const videoRes  = await axios.get(`http://localhost:3000/api/videos/find/${path}`)
+        const channelRes = await axios.get(`http://localhost:3000/api/users/find/${curentVideo.userId}`)
+
+        dispatch(channelSuccess(channelRes.data))
+       
+        dispatch(fetchSuccess(videoRes.data))
+       
+      } catch (err) {
+        dispatch(fetchFail())
+      }  
+    }
+    fetchVideo()  
+  },[path,dispatch])
+  const handleLike = async () => {
+
+    await fetch(`http://localhost:3000/api/users/like/${curentVideo._id}`,{
+      method: 'PUT',
+      credentials: 'include',
+
+    })
+    dispatch(like(curentUser._id))
+
+  }
+  const handleDislike = async() => {
+    await fetch(`http://localhost:3000/api/users/dislike/${curentVideo._id}`,{
+      method: 'PUT',
+      credentials: 'include',
+
+    })
+    dispatch(dislike(curentUser._id))
+  }
+  const handleSub = async() => {
+
+    curentUser.subscribersUsers.includes(curentChannel._id)
+    ? await fetch(`http://localhost:3000/api/users/unsub/${curentChannel._id}`,{
+      method: 'PUT',
+      credentials: 'include',
+    })
+    : await fetch(`http://localhost:3000/api/users/sub/${curentChannel._id}`,{
+      method: 'PUT',
+      credentials: 'include',
+    })
+    dispatch(subscription(curentChannel._id))
+  } 
+ 
+
   return (
-    <ContainerVideo>
-      <ContentVideo>
-        <VideoWapper>
-          <iframe
-            width="100%"
-            height="720"
-            src="https://www.youtube.com/watch?v=TqlEnvIKrns&ab_channel=SpeedyBoykins"
-            title="Recomment Video"
-            frameBorder="0"
-            allow="accelerometer; autoplay;clipboard-write;encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          ></iframe>
-        </VideoWapper>
-        <TitleVideo>Test videeo</TitleVideo>
+    
+    <>
+      <ContainerVideo>
+        <ContentVideo>
+          <VideoWapper>
+          <VideoFrame src={curentVideo.videoURL} controls/>
+          </VideoWapper>
+          <TitleVideo>{curentVideo.videoTitle}</TitleVideo>
 
-        <Channel>
-          <ChannelInfo>
-            <ChannelImg src="https://ichef.bbci.co.uk/news/976/cpsprodpb/F382/production/_123883326_852a3a31-69d7-4849-81c7-8087bf630251.jpg" />
-            <ChannelDetails>
-                <ChannelName>FastTV</ChannelName>
-                <ChannelCounter>200N subscriber</ChannelCounter>
-            </ChannelDetails>
-            <SubBtn>SUBSCRIBE</SubBtn>
-
-          </ChannelInfo>
+          <Channel>
+            <ChannelInfo>
+              <ChannelImg src={curentChannel.img} />
+              <ChannelDetails>
+                  <ChannelName>{curentChannel.name}</ChannelName>
+                  <ChannelCounter>{curentChannel.subscribers} subscriber</ChannelCounter>
+              </ChannelDetails>
+              {curentUser ? <SubBtn onClick={handleSub}>
+                {curentVideo.subscribersUsers?.includes(curentChannel._id) ? "SUBSCRIBE" : "SUBSCRIBED" }
+              </SubBtn>
+              : <SubBtn>SUBSCRIBE</SubBtn>}
+            </ChannelInfo>
 
 
-          <ButtonVideos>
-                <ButtonVideo >
-                    <ThumbUpIcon />123
+            <ButtonVideos >
+                
+                 {curentUser 
+                 ? <ButtonVideo onClick={handleLike}>
+                      {curentVideo.likes?.includes(curentUser._id) ? (<ThumbUpIcon />) : (<ThumbUpOffAltIcon/>) }{" "}{curentVideo.likes?.length}
+                  </ButtonVideo>
+                :
+                <ButtonVideo><ThumbUpIcon /></ButtonVideo>
+                  }
 
                 
-                    <ThumbDownAltIcon />
-                </ButtonVideo>
-                <ButtonVideo>
-                    <ShareIcon /> Share
-                </ButtonVideo>
-                <ButtonVideo>
-                    <SaveAltIcon /> Save
-                </ButtonVideo>
-          </ButtonVideos>
-        </Channel>
-        <ChannelDsec>
-          <InfoVideo>
-            606.606 views 1 days
-          </InfoVideo>
+                 {curentUser 
+                 ?<ButtonVideo onClick={handleDislike}>
+                  { curentVideo.dislikes?.includes(curentUser._id) ? (<ThumbDownAltIcon />):(<ThumbDownAltOutlinedIcon/>)}
+                  </ButtonVideo>
+                  : <ButtonVideo><ThumbDownAltIcon  /></ButtonVideo>
+                  }
+                
+                  <ButtonVideo>
+                      <ShareIcon /> Share
+                  </ButtonVideo>
+                  <ButtonVideo>
+                      <SaveAltIcon /> Save
+                  </ButtonVideo>
+            </ButtonVideos>
+          </Channel>
+          <ChannelDsec>
+            <InfoVideo>
+              {curentVideo.views} views {format(curentVideo.createdAt)}
+            </InfoVideo>
 
-          <ChannelDsecp>
-            Lorem 1231
-          </ChannelDsecp>
-        </ChannelDsec>
-        <Comments/>
-      </ContentVideo>
-      <RecommentVideo>
-        <Card type="sm"/>
-        <Card type="sm"/>
-        <Card type="sm"/>
-        <Card type="sm"/>
-        <Card type="sm"/>
-        <Card type="sm"/>
-        <Card type="sm"/>
-      </RecommentVideo>
-    </ContainerVideo>
+            <ChannelDsecp>
+              {curentVideo.videoDecs}
+            </ChannelDsecp>
+          </ChannelDsec>
+          <Comments videoId = {curentVideo._id}/>
+        </ContentVideo>
+        <Recomment tags={curentVideo.tags}/>
+      </ContainerVideo>
+    </>
   );
 };
 

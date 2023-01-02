@@ -1,5 +1,10 @@
+import { async } from "@firebase/util";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import Comment from "./Comment";
+
 
 
 
@@ -8,15 +13,15 @@ const ContainerCmts = styled.div`
 `
 const NewContainerCmts = styled.div`
     display: flex;
-    gap: 5px;
+    gap: 10px;
     align-items: center;
 
 `
-const AvatarContainerCmts = styled.div`
+const AvatarContainerCmts = styled.img`
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    object-fit: cover;    
+    object-fit: cover;
     
 `
 const InputContainerCmts = styled.input`
@@ -29,24 +34,63 @@ const InputContainerCmts = styled.input`
 
 
 `
+const ButtonSumitCmt = styled.button`
+   
+`
 
 
 
 
 
 
-function Comments() {
+function Comments({videoId}) {
+
+    const {curentUser} = useSelector((state) => state.user)
+    const {curentVideo} = useSelector((state) => state.video)
+
+    const dispatch = useDispatch()
+
+    const [comments, setCommnents] = useState([])
+    const [desc, setDesc] = useState('')
+
+    useEffect(()=>{
+        const fetchCommment = async()=> {
+            const res = await axios.get(`http://localhost:3000/api/comment/find/${videoId}`)
+            setCommnents(res.data)
+        }
+        fetchCommment()
+
+    },[videoId])
+   
+    const handleSummit = async () => {
+        try {
+        const res = await axios.post('http://localhost:3000/api/comment',{desc,videoId},{
+            withCredentials: true,
+        });
+        }
+        catch(err){}
+
+
+    }
+
+
+
     return ( 
     <ContainerCmts>
-        <NewContainerCmts>
-            <AvatarContainerCmts src="https://ichef.bbci.co.uk/news/976/cpsprodpb/F382/production/_123883326_852a3a31-69d7-4849-81c7-8087bf630251.jpg"/>
-            <InputContainerCmts placeholder="Add a comment..."/>
+       {curentUser 
+       ? <NewContainerCmts>
+         <AvatarContainerCmts src={curentUser.img} />
+            <InputContainerCmts onChange={e=>setDesc(e.target.value)} placeholder="Add a comment..."/>
+            <ButtonSumitCmt onClick={handleSummit}>Summit</ButtonSumitCmt>
         </NewContainerCmts>
+        :
+        ""
 
-        <Comment/>
-        <Comment/>
-        <Comment/>
-        <Comment/>
+        }
+        {comments.map((comment,index) => (
+
+            <Comment key={index} comment={comment} />
+        ))}
         
     </ContainerCmts>
      );

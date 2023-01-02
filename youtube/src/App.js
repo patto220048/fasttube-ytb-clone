@@ -18,6 +18,7 @@ import { lightTheme } from "./untils/Theme";
 import VideoPage from "./pages/VideoPage";
 import HomePage from "./pages/HomePage";
 import SigninPage from "./pages/SigninPage";
+import Search from "./pages/Search";
 
 const Container = styled.div`
   display: flex;
@@ -50,7 +51,11 @@ function App() {
             <Wapper>
               <Routes>
                 <Route path="/">
-                  <Route index element={<HomePage/>}/>
+                  <Route index element={<HomePage type='random'/>}/>
+                  <Route path="random" element={<HomePage type='random'/>}/>
+                  <Route path="trends" element={<HomePage type='trend'/>}/>
+                  <Route path="subscriptions" element={<HomePage type='sub'/>}/>
+                  <Route path="search" element={<Search type='search'/>}/>
                     <Route path="signin" element={<SigninPage/>}></Route>
                     <Route path="video">
                       <Route path=":id" element={<VideoPage/>}/>
