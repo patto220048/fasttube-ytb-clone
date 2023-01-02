@@ -24,7 +24,7 @@ export const videoSlice = createSlice({
         like: (state, action)=>{
             if(!state.curentVideo.likes.includes(action.payload)){
                 state.curentVideo.likes.push(action.payload);
-                state.curentVideo.dislikes.splice(
+                state.curentVideo.dislikes.splice(  
                     state.curentVideo.dislikes.findIndex(
                         (userId) => userId === action.payload),1)
             }
@@ -37,13 +37,10 @@ export const videoSlice = createSlice({
                         (userId) => userId === action.payload),1)
             }
         },
-        comment1: (state, action)=>{
-            state.curentVideo = action.payload
-        }
 
     },
   })
 
-export const {fetchStart,fetchSuccess,fetchFail,like, dislike, comment1} = videoSlice.actions
+export const {fetchStart,fetchSuccess,fetchFail,like, dislike} = videoSlice.actions
 
 export default videoSlice.reducer

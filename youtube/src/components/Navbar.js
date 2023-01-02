@@ -17,12 +17,11 @@ import { useState } from "react";
 
 
 const ContainerNav = styled.div`
-    position: sticky;
-    top: 0;
     background-color:${({theme}) => theme.bgLighter};
     height:56px;
     position: sticky;
     top: 0;
+    z-index:1
 `
 
 const WapperNav = styled.div`

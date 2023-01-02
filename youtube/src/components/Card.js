@@ -78,7 +78,7 @@ const Card = ({type,video}) => {
     return ( 
         <Link to={`/video/${video._id}`} style={{textDecoration: 'none' }}>
             <ContainerCard type = {type}>
-                <ImgCard type = {type} src={video.videoImg}/>
+                <ImgCard type = {type} src={video.imgURL}/>
                 <DetailsCard  type = {type}>
                     <ChannelImg type = {type} src={channel.img}/>
                     <Texts>

@@ -126,9 +126,9 @@ function SigninPage() {
                 },
                { withCredentials: true}
                 )
-                .then((res)=>{
-                    dispatch(loginSuccess(res.data))
-                })
+            .then((res)=>{
+                dispatch(loginSuccess(res.data))
+            })
 
             })
             .catch (err => {

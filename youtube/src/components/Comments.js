@@ -3,6 +3,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
+
 import Comment from "./Comment";
 
 
@@ -53,6 +54,8 @@ function Comments({videoId}) {
     const [comments, setCommnents] = useState([])
     const [desc, setDesc] = useState('')
 
+
+
     useEffect(()=>{
         const fetchCommment = async()=> {
             const res = await axios.get(`http://localhost:3000/api/comment/find/${videoId}`)
@@ -67,6 +70,7 @@ function Comments({videoId}) {
         const res = await axios.post('http://localhost:3000/api/comment',{desc,videoId},{
             withCredentials: true,
         });
+
         }
         catch(err){}
 

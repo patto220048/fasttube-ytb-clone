@@ -32,9 +32,8 @@ class commentsController {
     }
     async getComments(req, res, next) {
         try {
-            const comments = await Comment.find({videoId: req.params.videoId })
+            const comments = await Comment.find({videoId: req.params.videoId }).sort({_id:-1})
             res.status(200).json(comments)
-            console.log(comments)
         } 
         catch (err) {
             next(err)

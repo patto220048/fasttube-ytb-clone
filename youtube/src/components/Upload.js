@@ -9,13 +9,15 @@ import { useNavigate } from "react-router-dom";
 const ContainerUpload = styled.div`
     width: 100%;
     height: 100%;
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     background-color:#000000a7;
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 2;
+    
 
 `
 const WapperUpload = styled.div`
@@ -29,6 +31,7 @@ const WapperUpload = styled.div`
     gap: 20px;
     position: relative;
     justify-content: center;
+    position: absolute;
 
     
 
@@ -39,6 +42,9 @@ const Close = styled.div`
     top: 10px;
     right: 10px;
     cursor: pointer;
+    &:hover{
+        color : #333
+    }
  
 `
 
@@ -96,7 +102,6 @@ function Upload({setOpen}) {
     const [videoPer, setVideoPer ] = useState(0)
     const [inputs, setInputs] = useState({})
 
-    console.log(inputs)
 
     const [tags, setTags ] = useState([])
 
@@ -111,7 +116,7 @@ function Upload({setOpen}) {
     }
 
     const handleTags = (e) => {
-        setTags(e.target.value.split(','))
+        setTags(e.target.value.split(','));
         
     }
 
@@ -180,7 +185,7 @@ function Upload({setOpen}) {
                 
                 <InpputDecs placeholder="Description" name='videoDecs' rows={8} onChange={handleChange}/>
                 
-                <Inpput type="text" placeholder="Tags" onChange={e=>setTags(handleTags)}/>
+                <Inpput type="text" placeholder="Tags" onChange={handleTags}/>
                 <Label>Thumbnail image:</Label>
                 {imgPer > 0 ? ("Uploading:"+ imgPer+'%') :(<Inpput type="file" accept="image/*" onChange={e=>setImg(e.target.files[0])}/>)}
                 <ButtonUpload onClick={handleUpload}>Upload</ButtonUpload>

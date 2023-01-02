@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { format } from "timeago.js";
 
@@ -51,6 +52,7 @@ function Comment({comment}) {
 
     const [channel, setChannel] = useState({})
 
+
     useEffect(()=> {    
         const fetchChannel = async() =>{    
             const res = await axios.get(`http://localhost:3000/api/users/find/${comment.userId}`)
@@ -62,10 +64,10 @@ function Comment({comment}) {
 
     return ( 
        <ContainerCmt>
-            <AvatarContainerCmt src={channel.img} />
+        {channel.img ? <AvatarContainerCmt src={channel.img} /> : <AvatarContainerCmt/>}
             <DetailsCmt>
                 <NamelCmt>{channel.name}
-                    <DateCmt> {format(channel.updatedAt)}</DateCmt>
+                    <DateCmt> {format(comment.createdAt)}</DateCmt>
                 </NamelCmt>
                 <DescCmt/> {comment.desc} <DescCmt/>  
             </DetailsCmt>

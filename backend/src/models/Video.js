@@ -19,7 +19,6 @@ const VideoSchema = new mongoose.Schema({
     },
     videoImg: {
         type : String,
-        required : true,
     },
     imgURL: {
         type : String,

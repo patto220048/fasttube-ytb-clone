@@ -7,14 +7,13 @@ import Comments from "../components/Comments";
 import Card from "../components/Card";
 import { useSelector, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios, { Axios } from "axios";
 import { fetchSuccess, like, dislike, fetchFail } from "../redux/videoSlice";
 import { format } from "timeago.js";
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ThumbDownAltOutlinedIcon from '@mui/icons-material/ThumbDownAltOutlined';
 import { subscription } from "../redux/userSlice";
-import { channelFail, channelSuccess } from "../redux/channelVideoSlice";
 import Recomment from "../components/Recomment";
 
 
@@ -25,7 +24,10 @@ const ContainerVideo = styled.div`
 const ContentVideo = styled.div`
   flex: 5;
 `;
-const VideoWapper = styled.div``;
+const VideoWapper = styled.div`
+  position: relative;
+
+`;
 const TitleVideo = styled.h1`
   font-size: 18px;
   font-weight: 400;
@@ -62,9 +64,6 @@ const ButtonVideo = styled.div`
   
 `;
 
-const RecommentVideo = styled.div`
-  flex: 2;
-`;
 
 const Channel = styled.div`
   display: flex;
@@ -137,28 +136,40 @@ const VideoFrame = styled.video`
   object-fit: cover;
   
 
+  
+
 `
 
 const VideoPage = () => {
   
+  
   const {curentUser} = useSelector((state) => state.user)
   const {curentVideo} = useSelector((state) => state.video)
-  const {curentChannel} = useSelector((state) => state.channelVideo)
 
 
-
-  const dispatch = useDispatch()
   const path = useLocation().pathname.split('/')[2]
 
+  
+  const videoRef = useRef()
+
+
+
+
  
+  const dispatch = useDispatch()
+  const [channel, setChannel] = useState({})
+
+
   useEffect(()=>{
 
+    
     const fetchVideo = async () =>{
       try {
         const videoRes  = await axios.get(`http://localhost:3000/api/videos/find/${path}`)
-        const channelRes = await axios.get(`http://localhost:3000/api/users/find/${curentVideo.userId}`)
+        
+        const channelRes = await axios.get(`http://localhost:3000/api/users/find/${videoRes.data.userId}`)
 
-        dispatch(channelSuccess(channelRes.data))
+        setChannel(channelRes.data)
        
         dispatch(fetchSuccess(videoRes.data))
        
@@ -168,6 +179,8 @@ const VideoPage = () => {
     }
     fetchVideo()  
   },[path,dispatch])
+
+
   const handleLike = async () => {
 
     await fetch(`http://localhost:3000/api/users/like/${curentVideo._id}`,{
@@ -188,17 +201,20 @@ const VideoPage = () => {
   }
   const handleSub = async() => {
 
-    curentUser.subscribersUsers.includes(curentChannel._id)
-    ? await fetch(`http://localhost:3000/api/users/unsub/${curentChannel._id}`,{
+    curentUser.subscribersUsers.includes(channel._id)
+    ? await fetch(`http://localhost:3000/api/users/unsub/${channel._id}`,{
       method: 'PUT',
       credentials: 'include',
     })
-    : await fetch(`http://localhost:3000/api/users/sub/${curentChannel._id}`,{
+    : await fetch(`http://localhost:3000/api/users/sub/${channel._id}`,{
       method: 'PUT',
       credentials: 'include',
     })
-    dispatch(subscription(curentChannel._id))
+    dispatch(subscription(channel._id))
   } 
+
+ 
+
  
 
   return (
@@ -207,19 +223,19 @@ const VideoPage = () => {
       <ContainerVideo>
         <ContentVideo>
           <VideoWapper>
-          <VideoFrame src={curentVideo.videoURL} controls/>
+          <VideoFrame ref={videoRef} src={curentVideo.videoURL}  autoPlay controls />
           </VideoWapper>
           <TitleVideo>{curentVideo.videoTitle}</TitleVideo>
 
           <Channel>
             <ChannelInfo>
-              <ChannelImg src={curentChannel.img} />
+              <ChannelImg src={channel.img} />
               <ChannelDetails>
-                  <ChannelName>{curentChannel.name}</ChannelName>
-                  <ChannelCounter>{curentChannel.subscribers} subscriber</ChannelCounter>
+                  <ChannelName>{channel.name}</ChannelName>
+                  <ChannelCounter>{channel.subscribers} subscriber</ChannelCounter>
               </ChannelDetails>
               {curentUser ? <SubBtn onClick={handleSub}>
-                {curentVideo.subscribersUsers?.includes(curentChannel._id) ? "SUBSCRIBE" : "SUBSCRIBED" }
+                {curentVideo.subscribersUsers?.includes(channel._id) ? "UNSUBSCRIBE" : "SUBSCRIBE" }
               </SubBtn>
               : <SubBtn>SUBSCRIBE</SubBtn>}
             </ChannelInfo>
@@ -262,7 +278,7 @@ const VideoPage = () => {
           </ChannelDsec>
           <Comments videoId = {curentVideo._id}/>
         </ContentVideo>
-        <Recomment tags={curentVideo.tags}/>
+        <Recomment tags={curentVideo.tags} curentVideo={curentVideo}/>
       </ContainerVideo>
     </>
   );

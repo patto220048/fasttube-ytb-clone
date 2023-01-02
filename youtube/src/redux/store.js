@@ -1,7 +1,8 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit'
 import userReducer from '../redux/userSlice'
 import videoReducer from '../redux/videoSlice'
-import channelVideoReducer from '../redux/channelVideoSlice'
+
+
 import {
   persistStore,
   persistReducer,
@@ -20,7 +21,7 @@ const persistConfig = {
   version: 1,
   storage,
 }
-const rootReducer = combineReducers({user: userReducer,video: videoReducer, channelVideo:channelVideoReducer })
+const rootReducer = combineReducers({user: userReducer,video: videoReducer})
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
 
