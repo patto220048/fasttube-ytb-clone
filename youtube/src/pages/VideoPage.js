@@ -4,17 +4,18 @@ import ThumbDownAltIcon from "@mui/icons-material/ThumbDownAlt";
 import ShareIcon from "@mui/icons-material/Share";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import Comments from "../components/Comments";
-import Card from "../components/Card";
+
 import { useSelector, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
-import axios, { Axios } from "axios";
+import axios from "axios";
 import { fetchSuccess, like, dislike, fetchFail } from "../redux/videoSlice";
 import { format } from "timeago.js";
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ThumbDownAltOutlinedIcon from '@mui/icons-material/ThumbDownAltOutlined';
 import { subscription } from "../redux/userSlice";
 import Recomment from "../components/Recomment";
+import SetVideoFrame from "../components/VideoFrame";
 
 
 const ContainerVideo = styled.div`
@@ -130,15 +131,7 @@ const ChannelDsecp = styled.p`
   padding-left:12px;
 
 `
-const VideoFrame = styled.video`
-  max-height: 720px;
-  width:100%;
-  object-fit: cover;
-  
 
-  
-
-`
 
 const VideoPage = () => {
   
@@ -146,13 +139,10 @@ const VideoPage = () => {
   const {curentUser} = useSelector((state) => state.user)
   const {curentVideo} = useSelector((state) => state.video)
 
+  
+
 
   const path = useLocation().pathname.split('/')[2]
-
-  
-  const videoRef = useRef()
-
-
 
 
  
@@ -218,12 +208,13 @@ const VideoPage = () => {
  
 
   return (
+
     
     <>
       <ContainerVideo>
         <ContentVideo>
           <VideoWapper>
-          <VideoFrame ref={videoRef} src={curentVideo.videoURL}  autoPlay controls />
+          <SetVideoFrame property={curentVideo.videoURL} path={path}/>
           </VideoWapper>
           <TitleVideo>{curentVideo.videoTitle}</TitleVideo>
 

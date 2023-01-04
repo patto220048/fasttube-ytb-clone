@@ -17,9 +17,9 @@ export const userSlice = createSlice({
             state.loading = false;
             state.curentUser = action.payload
         },
-        loginFail: (state)=>{
+        loginFail: (state,action)=>{
             state.loading = false;
-            state.error = true;
+           
         },
         logout:(state)=>{
             return initialState

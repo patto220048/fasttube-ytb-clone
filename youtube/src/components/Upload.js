@@ -169,7 +169,7 @@ function Upload({setOpen}) {
             withCredentials: true
         })
         setOpen(false)
-        res.status === 200 && navigate(`/api/video/${res.data._id}`)
+        res.status === 200 && navigate(`api/video/${res.data._id}`)
 
 
     }

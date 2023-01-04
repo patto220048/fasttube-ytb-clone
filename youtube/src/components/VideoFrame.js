@@ -1,15 +1,41 @@
+import axios from "axios";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
 
+const VideoFrame = styled.video`
+    max-height: 720px;
+    width:100%;
+    object-fit: cover;
+
+`
 
 
 
-function VideoFrame({src,ref}) {
+function SetVideoFrame({property,path}) {
+    const videoRef = useRef(null)
+    
 
-    console.log(src)
+    useEffect(() => {
+      videoRef.current.addEventListener('timeupdate', function handleView(){
+        if(videoRef.current.currentTime/videoRef.current.duration===1)
+          {
+              const fectchView = async() => {
+                await axios.put(`http://localhost:3000/api/videos/view/${path}`)
+              }
+              fectchView()
+          }
+        })
+     
+  
+  
+    },[path])
+   
+
+
     return ( 
-        <p></p>
+        <VideoFrame ref={videoRef}  src={property} controls  />
      );
 }
 
-export default VideoFrame;
+export default SetVideoFrame;

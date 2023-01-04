@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { loginFail, loginStart, loginSuccess } from "../redux/userSlice";
 
 import app,{auth,providerGG} from "../firebase"
@@ -86,9 +86,15 @@ const Link = styled.span`
 `
 
 
+const ErrMg = styled.span`
+    color: red;
+    font-size: 12px;
 
+`
 
 function SigninPage() {
+    const [errMessage, setErrMessage] = useState({})
+
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -128,6 +134,7 @@ function SigninPage() {
                 )
             .then((res)=>{
                 dispatch(loginSuccess(res.data))
+                navigate(`/`)
             })
 
             })
@@ -135,6 +142,23 @@ function SigninPage() {
                 dispatch(loginFail())
             })
     }
+
+    const handleSignup =async(e) => {
+        dispatch(loginStart())
+        try {
+            const res = await axios.post('http://localhost:3000/api/auth/signup',{name,email,password},{
+                withCredentials: true,
+            }); //for POST
+            dispatch(loginSuccess(res.data))
+
+            navigate(`/`)
+
+            
+        } catch (err) {
+        }
+
+    }
+
     return ( 
         <ContainerSignin>
             <WapperSignin>
@@ -148,8 +172,9 @@ function SigninPage() {
                 <TitleSignin>or</TitleSignin>
                 <InputSignin placeholder="username" onChange={e=>setName(e.target.value)}/>
                 <InputSignin placeholder="email" onChange={e=>setEmail(e.target.value)}/>
+                <ErrMg></ErrMg>
                 <InputSignin type="password" placeholder="password" onChange={e=>setPassword(e.target.value)}/>
-                <BtnSignin>Sign up</BtnSignin>
+                <BtnSignin onClick={handleSignup}>Sign up</BtnSignin>
             </WapperSignin>
             <More>
                 English (USA)

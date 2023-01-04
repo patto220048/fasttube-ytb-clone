@@ -3,13 +3,13 @@ import {getAuth, GoogleAuthProvider} from "firebase/auth"
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 const firebaseConfig = {
-  apiKey: "AIzaSyD-f9MRMsI6aWF2NaUXtiv0p1HndaZxhrk",
-  authDomain: "test-d15ea.firebaseapp.com",
-  projectId: "test-d15ea",
-  storageBucket: "test-d15ea.appspot.com",
-  messagingSenderId: "709542863358",
-  appId: "1:709542863358:web:8ab41a5562cb14a3b3e0af",
-  measurementId: "G-8FZE988FMB"
+  apiKey: "AIzaSyCjMkdYIOKAoi_EoTyuVc6mUSe6HI8kRq8",
+  authDomain: "video-dfa8f.firebaseapp.com",
+  projectId: "video-dfa8f",
+  storageBucket: "video-dfa8f.appspot.com",
+  messagingSenderId: "581625775211",
+  appId: "1:581625775211:web:27bba1925e1ec6219c9d2e",
+  measurementId: "G-0665K6WHGL"
 };
 
 // Initialize Firebase
