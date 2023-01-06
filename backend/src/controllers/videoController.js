@@ -97,10 +97,10 @@ class videoController {
 
     async addView(req, res, next) {
         try {
-           const view = await Video.findByIdAndUpdate(req.params.id,{
+        await Video.findByIdAndUpdate(req.params.id,{
                 $inc:{views:1}
             })
-            res.status(200).json(view)
+            res.status(200).json('add view successfully')
         } catch (err) {
             next(err)
             

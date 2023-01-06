@@ -7,7 +7,7 @@ import Comments from "../components/Comments";
 
 import { useSelector, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import axios from "axios";
 import { fetchSuccess, like, dislike, fetchFail } from "../redux/videoSlice";
 import { format } from "timeago.js";
@@ -136,32 +136,28 @@ const ChannelDsecp = styled.p`
 const VideoPage = () => {
   
   
-  const {curentUser} = useSelector((state) => state.user)
   const {curentVideo} = useSelector((state) => state.video)
+  const {curentUser} = useSelector((state) => state.user)
 
-  
-
-
-  const path = useLocation().pathname.split('/')[2]
+  const path = useLocation().pathname.split('/')[2] 
 
 
  
   const dispatch = useDispatch()
   const [channel, setChannel] = useState({})
 
-
+  
   useEffect(()=>{
-
     
     const fetchVideo = async () =>{
       try {
         const videoRes  = await axios.get(`http://localhost:3000/api/videos/find/${path}`)
         
         const channelRes = await axios.get(`http://localhost:3000/api/users/find/${videoRes.data.userId}`)
-
+        
+        dispatch(fetchSuccess(videoRes.data))
         setChannel(channelRes.data)
        
-        dispatch(fetchSuccess(videoRes.data))
        
       } catch (err) {
         dispatch(fetchFail())
@@ -208,13 +204,10 @@ const VideoPage = () => {
  
 
   return (
-
-    
-    <>
-      <ContainerVideo>
+    <ContainerVideo>
         <ContentVideo>
           <VideoWapper>
-          <SetVideoFrame property={curentVideo.videoURL} path={path}/>
+          <SetVideoFrame videoURL={curentVideo.videoURL} path={path}/>
           </VideoWapper>
           <TitleVideo>{curentVideo.videoTitle}</TitleVideo>
 
@@ -270,8 +263,8 @@ const VideoPage = () => {
           <Comments videoId = {curentVideo._id}/>
         </ContentVideo>
         <Recomment tags={curentVideo.tags} curentVideo={curentVideo}/>
-      </ContainerVideo>
-    </>
+    </ContainerVideo>
+
   );
 };
 

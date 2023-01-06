@@ -12,29 +12,49 @@ const VideoFrame = styled.video`
 
 
 
-function SetVideoFrame({property,path}) {
+function SetVideoFrame({videoURL,path}) {
+  
     const videoRef = useRef(null)
+
+
     
 
     useEffect(() => {
+
+      console.log(videoRef.current.playbackRate)
+
+      
       videoRef.current.addEventListener('timeupdate', function handleView(){
-        if(videoRef.current.currentTime/videoRef.current.duration===1)
+        
+          if(videoRef.current.currentTime >=(videoRef.current.duration/2)-2 && videoRef.current.currentTime <= (videoRef.current.duration/2 )-1.7)
           {
-              const fectchView = async() => {
-                await axios.put(`http://localhost:3000/api/videos/view/${path}`)
-              }
-              fectchView()
+           console.log(videoRef.current.currentTime)
+           const fectchView = async() => {
+            await axios.put(`http://localhost:3000/api/videos/view/${path}`)
           }
+          fectchView()
+        
+            
+          }
+          else if (videoRef.current.currentTime/videoRef.current.duration ===1 ){
+            const fectchView = async() => {
+              await axios.put(`http://localhost:3000/api/videos/view/${path}`)
+            }
+            fectchView()
+          
+          }
+            
         })
-     
-  
-  
-    },[path])
+      return () => {
+         
+          }
+      
+    },[videoRef])
    
 
 
     return ( 
-        <VideoFrame ref={videoRef}  src={property} controls  />
+        <VideoFrame ref={videoRef}  src={videoURL} controls  />
      );
 }
 

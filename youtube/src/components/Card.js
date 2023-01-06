@@ -68,9 +68,15 @@ const Card = ({type,video}) => {
     const [channel, setChannel] = useState({})
 
     useEffect(()=>{
+        let mount = true;
         const fetchChannel = async()=> {
             const res = await axios.get(`http://localhost:3000/api/users/find/${video.userId}`)
-            setChannel(res.data)
+            if(mount){
+                setChannel(res.data)
+            }
+            return () =>{
+                mount = false
+            }
         }
         fetchChannel()
 
